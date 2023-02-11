@@ -1,0 +1,39 @@
+product: fedora
+full_name: Fedora
+type: platform
+
+benchmark_root: "./guide"
+
+profiles_root: "./profiles"
+
+pkg_manager: "dnf"
+
+init_system: "systemd"
+
+# The fingerprints below are retrieved from https://getfedora.org/keys/
+latest_version: 36
+latest_release_fingerprint: "53DED2CB922D8B8D9E63FD18999F7CBF38AB71F4"
+latest_pkg_version: "38ab71f4"
+latest_pkg_release: "60242b08"
+
+previous_version: 35
+previous_release_fingerprint: "787EA6AE1147EEE56C40B30CDB4639719867C58F"
+previous_pkg_version: "9867c58f"
+previous_pkg_release: "601c49ca"
+
+cpes_root: "./applicability"
+cpes:
+  - fedora_37:
+      name: "cpe:/o:fedoraproject:fedora:37"
+      title: "Fedora 37"
+      check_id: installed_OS_is_fedora
+
+  - fedora_36:
+      name: "cpe:/o:fedoraproject:fedora:36"
+      title: "Fedora 36"
+      check_id: installed_OS_is_fedora
+
+  - fedora_35:
+      name: "cpe:/o:fedoraproject:fedora:35"
+      title: "Fedora 35"
+      check_id: installed_OS_is_fedora

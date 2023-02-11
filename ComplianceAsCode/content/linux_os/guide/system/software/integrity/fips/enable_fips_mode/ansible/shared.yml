@@ -1,0 +1,26 @@
+# platform = Red Hat Enterprise Linux 8,multi_platform_fedora,Oracle Linux 8
+# reboot = true
+# strategy = restrict
+# complexity = medium
+# disruption = medium
+{{{ ansible_instantiate_variables("var_system_crypto_policy") }}}
+
+- name: Check to see the current status of FIPS mode
+  command: /usr/bin/fips-mode-setup --check
+  register: is_fips_enabled
+  changed_when: false
+
+- name: Enable FIPS mode
+  command: /usr/bin/fips-mode-setup --enable
+  when:
+    - is_fips_enabled.stdout.find('FIPS mode is enabled.') == -1
+
+- name: "{{{ rule_title }}}"
+  lineinfile:
+    path: /etc/crypto-policies/config
+    regexp: '^(?!#)(\S+)$'
+    line: "{{ var_system_crypto_policy }}"
+    create: yes
+
+- name: Verify that Crypto Policy is Set (runtime)
+  command: /usr/bin/update-crypto-policies --set {{ var_system_crypto_policy }}

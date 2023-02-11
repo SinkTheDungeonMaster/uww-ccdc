@@ -1,0 +1,43 @@
+# platform = multi_platform_all
+# reboot = true
+# strategy = disable
+# complexity = low
+# disruption = medium
+
+- name: List /etc/sysctl.d/*.conf files
+  find:
+    paths:
+      - "/etc/sysctl.d/"
+      - "/run/sysctl.d/"
+      - "/usr/local/lib/sysctl.d/"
+{{% if product not in [ "ol7", "ol8", "ol9", "rhcos4", "rhel7", "rhel8", "rhel9"] %}}
+      - "/usr/lib/sysctl.d/"
+{{% endif %}}
+    contains: '^[\s]*{{{ SYSCTLVAR }}}.*$'
+    patterns: "*.conf"
+    file_type: any
+  register: find_sysctl_d
+
+- name: Comment out any occurrences of {{{ SYSCTLVAR }}} from config files
+  replace:
+    path: "{{ item.path }}"
+    regexp: '^[\s]*{{{ SYSCTLVAR }}}'
+    replace: '#{{{ SYSCTLVAR }}}'
+  loop: "{{ find_sysctl_d.files }}"
+
+{{%- if SYSCTLVAL == "" or SYSCTLVAL is not string  %}}
+- (xccdf-var sysctl_{{{ SYSCTLID }}}_value)
+
+- name: Ensure sysctl {{{ SYSCTLVAR }}} is set
+  sysctl:
+    name: "{{{ SYSCTLVAR }}}"
+    value: "{{ sysctl_{{{ SYSCTLID }}}_value }}"
+{{%- else %}}
+- name: Ensure sysctl {{{ SYSCTLVAR }}} is set to {{{ SYSCTLVAL }}}
+  sysctl:
+    name: "{{{ SYSCTLVAR }}}"
+    value: "{{{ SYSCTLVAL }}}"
+{{%- endif %}}
+    state: present
+    reload: yes
+

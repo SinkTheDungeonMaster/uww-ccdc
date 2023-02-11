@@ -1,0 +1,24 @@
+srg_requirement: |-
+    {{{ full_name }}} must be configured so that all network connections associated with a communication session are terminated at the end of the session or after 15 minutes of inactivity from the user at a command prompt, except to fulfill documented and validated mission requirements.
+
+vuldiscussion: |-
+    Terminating an idle session within a short time period reduces
+    the window of opportunity for unauthorized personnel to take control of a
+    management session enabled on the console or console port that has been
+    left unattended.
+
+checktext: |-
+    Verify {{{ full_name }}} terminates all network connections associated with a communications session at the end of the session or based on inactivity with the following command:
+
+    $ sudo grep -i tmout /etc/profile /etc/profile.d/*.sh
+
+    etc/profile.d/tmout.sh:declare -xr TMOUT=900
+
+    If "TMOUT" is not set to "900" or less in a script located in the /etc/profile.d/ directory to enforce session termination after inactivity, this is a finding.
+
+fixtext: |-
+    Configure {{{ full_name }}} to terminate user sessions after 900 seconds of inactivity.
+
+    Add or edit the following line in "/etc/profile.d/tmout.sh":
+
+     TMOUT=900

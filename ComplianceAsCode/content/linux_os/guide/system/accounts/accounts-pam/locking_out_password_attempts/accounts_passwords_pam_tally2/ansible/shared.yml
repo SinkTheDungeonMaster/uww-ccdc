@@ -1,0 +1,11 @@
+# platform = multi_platform_sle,multi_platform_ubuntu
+# reboot = false
+# strategy = configure
+# complexity = low
+# disruption = low
+
+{{{ ansible_instantiate_variables("var_password_pam_tally2")  }}}
+
+{{{ ansible_ensure_pam_module_option('/etc/pam.d/common-auth', 'auth', 'required', 'pam_tally2.so', 'deny', "{{ var_password_pam_tally2 }}", '') }}}
+{{{ ansible_ensure_pam_module_option('/etc/pam.d/common-auth', 'auth', 'required', 'pam_tally2.so', 'onerr', 'fail', '(fail)') }}}
+{{{ ansible_ensure_pam_module_option('/etc/pam.d/common-account', 'account', 'required', 'pam_tally2.so', '', '', '') }}}

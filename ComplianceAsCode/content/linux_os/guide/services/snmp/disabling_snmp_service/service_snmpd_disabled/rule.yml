@@ -1,0 +1,46 @@
+documentation_complete: true
+
+prodtype: alinux2,alinux3,anolis8,debian10,debian11,rhel7,rhel8,rhel9,sle12,sle15
+
+title: 'Disable snmpd Service'
+
+description: |-
+    {{{ describe_service_disable(service="snmpd") }}}
+
+rationale: |-
+    Running SNMP software provides a network-based avenue of attack, and
+    should be disabled if not needed.
+
+severity: low
+
+identifiers:
+    cce@rhel7: CCE-80274-4
+    cce@rhel8: CCE-82758-4
+    cce@rhel9: CCE-90832-7
+    cce@sle12: CCE-92253-4
+    cce@sle15: CCE-91373-1
+
+references:
+    cis@alinux2: 2.1.14
+    cis@alinux3: 2.2.5
+    cis@rhel7: 2.2.14
+    cis@sle12: 2.2.15
+    cis@sle15: 2.2.15
+    ism: "1311"
+    vmmsrg: SRG-OS-000480-VMM-002000
+
+ocil_clause: |-
+    {{{ ocil_clause_service_disabled(service="snmpd") }}}
+
+ocil: |-
+    {{{ ocil_service_disabled(service="snmpd") }}}
+
+platform: machine
+
+template:
+    name: service_disabled
+    vars:
+        servicename: snmpd
+        packagename@debian10: snmpd
+        packagename@debian11: snmpd
+        packagename: net-snmp

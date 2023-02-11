@@ -1,0 +1,7 @@
+documentation_complete: true
+
+prodtype: ocp4,eks
+
+title: 'Kubernetes - General Security Practices'
+
+description: 'Contains evaluations for general security practices for operating a Kubernetes environment.'

@@ -1,0 +1,61 @@
+documentation_complete: true
+
+prodtype: ocp4
+
+title: 'Configure the Encryption Provider Cipher'
+
+{{% set custom_jqfilter = '{{.var_apiserver_encryption_filter}}' %}}
+{{% set default_jqfilter = '[.spec.encryption.type]' %}}
+{{% set custom_api_path = '{{if ne .hypershift_cluster "None"}}/apis/hypershift.openshift.io/v1beta1/namespaces/clusters/hostedclusters/{{.hypershift_cluster}}{{else}}{{.var_apiserver_encryption_path}}{{end}}' %}}
+{{% set default_api_path = '/apis/config.openshift.io/v1/apiservers/cluster' %}}
+{{% set dump_path = default_api_path ~ ',' ~ default_jqfilter ~ ',' ~ custom_jqfilter %}}
+
+description: |-
+    To ensure the correct cipher, set the encryption type <tt>aescbc</tt> in the
+    <tt>apiserver</tt> object which configures the API server itself.
+    <pre>
+    spec:
+      encryption:
+        type: aescbc
+    </pre>
+
+    For more information, follow
+    {{{ weblink(link="https://docs.openshift.com/container-platform/4.6/security/encrypting-etcd.html",
+                text="the relevant documentation") }}}.
+
+rationale: |-
+    Where etcd encryption is used, it is important to ensure that the
+    appropriate set of encryption providers is used. Currently, aescbc, kms
+    and secretbox are likely to be appropriate options.
+
+    <tt>aescbc</tt> is the only type supported by OCP.
+
+severity: medium
+
+references:
+    cis@ocp4: 1.2.34
+    nerc-cip: CIP-003-8 R4.2
+    nist: SC-28,SC-28(1)
+    pcidss: Req-2.2
+    srg: SRG-APP-000429-CTR-001060
+
+ocil_clause: '<tt>aescbc</tt> is not configured as the encryption provider'
+
+ocil: |-
+    Run the following command:
+    <pre>$ oc get --raw {{.var_apiserver_encryption_path}} | jq {{.var_apiserver_encryption_filter}} </pre>
+    The output should return <tt>aescbc</tt> as the encryption type.
+
+warnings:
+- general: |-
+    {{{ openshift_filtered_cluster_setting({custom_api_path: dump_path}) | indent(4) }}}
+
+template:
+  name: yamlfile_value
+  vars:
+    ocp_data: "true"
+    entity_check: "all"
+    filepath: {{{ openshift_filtered_path(default_api_path, default_jqfilter) }}}
+    yamlpath: "[:]"
+    xccdf_variable: var_apiserver_encryption_type
+    regex_data: true
